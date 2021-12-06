@@ -70,12 +70,6 @@ userRouter.get('/', async (req: Request, res: Response) => {
         body: {
             query: {
                 bool
-                // : {
-                //     filter: [{ term: { name: 'Dn' } }],
-                //     must: {
-                //         range: { birthday: { gte: '10.04.2001', lte: '16.04.2001' } }
-                //     }
-                // }
             }
         }
     })
@@ -103,7 +97,8 @@ userRouter.post('/', validate(PostUserSchema), async (req: Request, res: Respons
         body: {
             ...body,
             timestamp: createTimestamp()
-        }
+        },
+        refresh: true
     })
 
     res.json({
@@ -115,14 +110,18 @@ userRouter.post('/', validate(PostUserSchema), async (req: Request, res: Respons
 userRouter.put('/:id', validate(PutUserSchema), async (req: Request, res: Response) => {
     const id = req.params.id
 
-    const body: IUserPut = req.body
+    const body: any = {
+        ...req.body,
+        timestamp: createTimestamp()
+    }
 
     const result: ApiResponse = await esClient.update({
         id,
         index: USERS_INDEX,
         body: {
             doc: body
-        }
+        },
+        refresh: true
     })
 
     res.json({
@@ -134,7 +133,7 @@ userRouter.put('/:id', validate(PutUserSchema), async (req: Request, res: Respon
 userRouter.delete('/', async (req: Request, res: Response) => {
     const ids: string[] | undefined = req.query.ids?.toString().split(',')
 
-    if (!ids) {
+    if (!ids || !ids.length) {
         res.sendStatus(400)
         return
     }
@@ -147,7 +146,8 @@ userRouter.delete('/', async (req: Request, res: Response) => {
                     _id: ids
                 }
             }
-        }
+        },
+        refresh: true
     })
 
     res.json({
