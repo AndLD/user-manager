@@ -1,36 +1,30 @@
 import { Modal, Form, Input, DatePicker, notification } from 'antd'
 import moment from 'moment'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
+import { AppContext } from '../AppContext'
 import { IUserPost } from '../utils/interfaces/user'
-import { Action } from '../utils/types'
 
-export default function ActionModal({
-    action,
-    values,
-    visible,
-    onAction,
-    onCancel
-}: {
-    action: Action
-    values: IUserPost
-    visible: boolean
-    onAction: (params: any) => void
-    onCancel: (params: any) => void
-}) {
+export default function ActionModal({ values }: { values: IUserPost }) {
+    const {
+        actionState: [action],
+        actionModalVisibilityState: [actionModalVisibility, setActionModalVisibility],
+        onAction
+    } = useContext(AppContext)
+
     const [form] = Form.useForm()
 
     useEffect(() => {
-        if (visible) form.resetFields()
-    }, [visible])
+        if (actionModalVisibility) form.resetFields()
+    }, [actionModalVisibility])
 
     return (
         <Modal
-            visible={visible}
+            visible={actionModalVisibility}
             title={`${action} user`}
             okText={action}
             cancelText="Cancel"
             onCancel={(params) => {
-                onCancel(params)
+                setActionModalVisibility(false)
                 form.resetFields()
             }}
             onOk={() => {

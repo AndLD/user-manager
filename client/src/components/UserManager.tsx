@@ -14,11 +14,8 @@ function UserManager() {
     const {
         paginationState: [pagination],
         selectedRowsState: [selectedRows],
-        actionState: [action, setAction],
-        actionModalVisibilityState: [actionModalVisibility, setActionModalVisibility],
 
-        fetchUsers,
-        onAction
+        fetchUsers
     } = useContext(AppContext)
 
     useEffect(() => {
@@ -44,12 +41,7 @@ function UserManager() {
                         <Title level={1}>User Manager</Title>
 
                         <div style={{ textAlign: 'left', margin: '10px 0' }}>
-                            <UserManagerControls
-                                fetchUsers={() => fetchUsers(pagination)}
-                                selectedRows={selectedRows}
-                                setAction={setAction}
-                                setActionModalVisibility={setActionModalVisibility}
-                            />
+                            <UserManagerControls />
                         </div>
                     </div>
 
@@ -57,13 +49,7 @@ function UserManager() {
                 </Content>
             </Layout>
 
-            <ActionModal
-                action={action}
-                values={selectedRows.length ? selectedRows[0] : DEFAULT_ACTION_VALUES}
-                visible={actionModalVisibility}
-                onAction={onAction}
-                onCancel={() => setActionModalVisibility(false)}
-            />
+            <ActionModal values={selectedRows.length ? selectedRows[0] : DEFAULT_ACTION_VALUES} />
         </>
     )
 }

@@ -20,12 +20,13 @@ function App() {
     const [action, setAction] = useState<Action>('Add')
     const [actionModalVisibility, setActionModalVisibility] = useState(false)
 
-    function fetchUsers(pagination: Pagination) {
+    function fetchUsers(pagination: Pagination, filters?: any) {
         setTableLoading(true)
         axios(USER_ROUTE, {
             params: {
                 page: pagination.current,
-                results: pagination.pageSize
+                results: pagination.pageSize,
+                filters
             }
         })
             .then((res: AxiosResponse) => {
@@ -47,9 +48,11 @@ function App() {
             data: body
         })
             .then((res: AxiosResponse) => {
-                if (['created', 'updated'].includes(res.data.data.result)) {
+                const result: string = res.data.data.result
+
+                if (result === 'created' || result === 'updated') {
                     fetchUsers(pagination)
-                    successNotification(`User has been successffully ${res.data.data.result}!`)
+                    successNotification(`User has been successffully ${result}!`)
                 } else warningNotification('Changes has not been saved!')
             })
             .catch((e: AxiosError) =>
@@ -58,23 +61,21 @@ function App() {
     }
 
     return (
-        <div className="App">
-            <AppContext.Provider
-                value={{
-                    paginationState: [pagination, setPagination],
-                    tableDataState: [tableData, setTableData],
-                    tableLoadingState: [tableLoading, setTableLoading],
-                    selectedRowsState: [selectedRows, setSelectedRows],
-                    actionState: [action, setAction],
-                    actionModalVisibilityState: [actionModalVisibility, setActionModalVisibility],
+        <AppContext.Provider
+            value={{
+                paginationState: [pagination, setPagination],
+                tableDataState: [tableData, setTableData],
+                tableLoadingState: [tableLoading, setTableLoading],
+                selectedRowsState: [selectedRows, setSelectedRows],
+                actionState: [action, setAction],
+                actionModalVisibilityState: [actionModalVisibility, setActionModalVisibility],
 
-                    fetchUsers,
-                    onAction
-                }}
-            >
-                <UserManager />
-            </AppContext.Provider>
-        </div>
+                fetchUsers,
+                onAction
+            }}
+        >
+            <UserManager />
+        </AppContext.Provider>
     )
 }
 

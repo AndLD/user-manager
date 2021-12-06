@@ -1,8 +1,8 @@
 import { ApiResponse } from '@elastic/elasticsearch'
-import esClient from '../db/db'
+import { esClient } from '../db/db'
 import { USERS_INDEX } from './constants'
 
-export const createIndex = async () =>
+const createIndex = async () =>
     await esClient.indices.create({
         index: USERS_INDEX,
         body: {
@@ -19,15 +19,7 @@ export const createIndex = async () =>
         }
     })
 
-// export const deleteIndex = async () =>
-//     await esClient.indices.delete(
-//         {
-//             index: USERS_INDEX
-//         },
-//         { ignore: [404] }
-//     )
-
-export const checkIndexExisting = async () => {
+export async function checkIndexExisting() {
     const result: ApiResponse = await esClient.indices.exists({ index: USERS_INDEX })
     if (result.statusCode === 404) await createIndex()
 }

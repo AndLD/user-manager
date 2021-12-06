@@ -58,7 +58,10 @@ export default function UserTable() {
             dataSource={tableData}
             pagination={pagination}
             loading={tableLoading}
-            onChange={(pagination: any) => fetchUsers(pagination)}
+            onChange={(pagination: any, filters) => {
+                fetchUsers(pagination)
+                console.log(filters)
+            }}
             style={{ width: '100%', fontSize: 50 }}
         />
     )
