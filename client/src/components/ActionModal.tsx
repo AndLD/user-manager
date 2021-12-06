@@ -23,7 +23,7 @@ export default function ActionModal({ values }: { values: IUserPost }) {
             title={`${action} user`}
             okText={action}
             cancelText="Cancel"
-            onCancel={(params) => {
+            onCancel={() => {
                 setActionModalVisibility(false)
                 form.resetFields()
             }}

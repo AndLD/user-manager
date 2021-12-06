@@ -18,11 +18,7 @@ function UserManager() {
         fetchUsers
     } = useContext(AppContext)
 
-    useEffect(() => {
-        document.title = 'User Manager'
-
-        fetchUsers(pagination)
-    }, [])
+    useEffect(() => fetchUsers(pagination), [])
 
     return (
         <>

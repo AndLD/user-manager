@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import { useState } from 'react'
-import './App.less'
+import { useEffect, useState } from 'react'
 import { AppContext } from './AppContext'
 import UserManager from './components/UserManager'
 import { USER_ROUTE } from './utils/constants'
@@ -13,6 +12,7 @@ function App() {
         current: 1,
         pageSize: 10
     })
+    const [filters, setFilters] = useState<string[]>([])
     const [tableData, setTableData] = useState<IUser[]>([])
     const [tableLoading, setTableLoading] = useState(false)
     const [selectedRows, setSelectedRows] = useState<IUser[]>([])
@@ -20,13 +20,13 @@ function App() {
     const [action, setAction] = useState<Action>('Add')
     const [actionModalVisibility, setActionModalVisibility] = useState(false)
 
-    function fetchUsers(pagination: Pagination, filters?: any) {
+    function fetchUsers(pagination: Pagination, filters?: string[]) {
         setTableLoading(true)
         axios(USER_ROUTE, {
             params: {
                 page: pagination.current,
                 results: pagination.pageSize,
-                filters
+                filters: filters ? filters.join(';') : undefined
             }
         })
             .then((res: AxiosResponse) => {
@@ -60,10 +60,15 @@ function App() {
             )
     }
 
+    useEffect(() => {
+        if (filters.length) fetchUsers(pagination, filters)
+    }, [filters])
+
     return (
         <AppContext.Provider
             value={{
                 paginationState: [pagination, setPagination],
+                filtersState: [filters, setFilters],
                 tableDataState: [tableData, setTableData],
                 tableLoadingState: [tableLoading, setTableLoading],
                 selectedRowsState: [selectedRows, setSelectedRows],

@@ -43,16 +43,13 @@ export const getUser = async (req: Request, res: Response) => {
         for (const filter of filters) {
             const [field, operation, value] = filter
 
-            function setRangeProperty() {
-                if (!bool.must) bool.must = {}
-                if (!bool.must.range) bool.must.range = {}
-                bool.must.range[field] = { [operation]: value }
-            }
-
             if (operation === '==') {
                 bool.filter.push({ term: { [field]: value } })
-            } else if ('>' || '<' || '>=' || '<=') {
-                setRangeProperty()
+            } else if (operation === 'gt' || operation === 'gte' || operation === 'lt' || operation === 'lte') {
+                if (!bool.must) bool.must = {}
+                if (!bool.must.range) bool.must.range = {}
+                if (!bool.must.range[field]) bool.must.range[field] = {}
+                bool.must.range[field][operation] = value
             }
         }
 
@@ -65,7 +62,6 @@ export const getUser = async (req: Request, res: Response) => {
             }
         }
     })
-
     const users = result.body
 
     res.json({
